@@ -18,10 +18,10 @@ import org.jpos.iso.packager.GenericPackager;
 import org.jpos.iso.ISOMsg;
 
 
-public class AbcCardToMobile {
+public class AbcCardToMobileISO {
 	
     /* Get actual class name to be printed on */
-    static Logger log = Logger.getLogger(AbcCardToMobile.class.getName());
+    static Logger log = Logger.getLogger(AbcCardToMobileISO.class.getName());
 	
 	public TrxResponse cardToMobileRequest (TrxRequest request) throws ISOException, IOException {
 	    

@@ -88,9 +88,9 @@ public class AbcIsoJob {
         
         TransferB2CDAO transferC2MDAO = new TransferB2CDAO();
         
-        TrxRequest orcReq = new TrxRequest();
+        TrxRequest apiReq = new TrxRequest();
         
-        orcReq = transferC2MDAO.logTransaction(transferC2MTransaction);
+        apiReq = transferC2MDAO.logTransaction(transferC2MTransaction);
 
         log.info("Getting server details for " + hostName);
 
@@ -98,42 +98,42 @@ public class AbcIsoJob {
         
 //        String response = null;
         
-        switch(orcReq.getStatusCode()){
+        switch(apiReq.getStatusCode()){
         case 94:
         	
-        	c2mresponseMsg.setStatusCode(orcReq.getStatusCode());
+        	c2mresponseMsg.setStatusCode(apiReq.getStatusCode());
 
             c2mresponseMsg.setStatusDescription("Duplicate transaction.");
             
         	break;
         case 95:
         	
-        	c2mresponseMsg.setStatusCode(orcReq.getStatusCode());
+        	c2mresponseMsg.setStatusCode(apiReq.getStatusCode());
 
             c2mresponseMsg.setStatusDescription("Server currently unavailable.");
             
         	break;
         default:
         	
-        	orcReq.setMsisdn(destmobile);
-        	orcReq.setAmount(creditAmount);
-        	orcReq.setBeneficiaryName(beneficiary_name);
+        	apiReq.setMsisdn(destmobile);
+        	apiReq.setAmount(creditAmount);
+        	apiReq.setBeneficiaryName(beneficiary_name);
 
-        	OracleTransferB2CDAO oracleb2cTrx = new OracleTransferB2CDAO();
+        	AbcCardToMobileWebServiceClient apiTrx = new AbcCardToMobileWebServiceClient();
         	
         	log.info("Insert Card2Mobile transaction details.... ");
         	
-        	StatusCode trxStatus = oracleb2cTrx.addMpesaC2BTrx(orcReq);
+        	StatusCode trxStatus = apiTrx.cardToMobileRequest(apiReq);
         	
         	TrxResponse c2mResponseTransactions = new TrxResponse();
         	
-        	c2mResponseTransactions.setTransactionID(orcReq.getTransactionID());
-        	c2mResponseTransactions.setStatusCode(100);
-        	c2mResponseTransactions.setStatusDescription("Processing");
-        	
+        	c2mResponseTransactions.setTransactionID(apiReq.getTransactionID());
+        	c2mResponseTransactions.setStatusCode(trxStatus.getStatusCode());
+        	c2mResponseTransactions.setStatusDescription(trxStatus.getStatusDescription());
+//        	
         	transferC2MDAO.updateTransactionResponse(c2mResponseTransactions);
-        	
-        	c2mresponseMsg.setStatusCode(0);
+//        	
+        	c2mresponseMsg.setStatusCode(trxStatus.getStatusCode());
             c2mresponseMsg.setStatusDescription(trxStatus.getStatusDescription());
                  	
         	break;
